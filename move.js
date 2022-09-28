@@ -66,4 +66,4 @@
   document.body.addEventListener('keydown', jumpORMove);
   // 鬆開按鍵後移動停止
   document.body.addEventListener('keyup', moveStop);
-})(+prompt());
+})();
