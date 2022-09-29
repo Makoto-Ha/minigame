@@ -1,28 +1,27 @@
 const player = document.getElementById('player');
 const food = document.querySelector('.food');
-let eatX = food.offsetLeft - player.clientWidth;
-let stop, change = true;
-document.body.addEventListener('keydown', () => {
- if(change && food.style.display !== 'none') {
-  change = false;
-  stop = setInterval(() => {
-    console.log('fps');
-    if(player.offsetLeft > eatX) {
+let stop, envMark;
+const envDetect = () => {
+  const detect = () => {
+    // 環境
+  }
+  clearInterval(envMark); // 清除上一個環境偵測
+  envMark = setInterval(detect,33);
+}
+document.body.addEventListener('keydown', (e) => {
+  if(e.key === 'ArrowRight' || e.key === 'ArrowLeft') envDetect(); // 調用環境偵測
+  if(food.style.display !== 'none') {
+
+    if(player.offsetLeft > food.offsetLeft - player.clientWidth) {
       food.style.display = 'none';
       player.style.width = parseInt(getComputedStyle(player, null).width) + 20 + 'px';
-      clearInterval(stop);
-      change = true;
-      setTimeout(() => {
-        food.style.display = 'block';
-      }, 1000)
+      setTimeout(() => food.style.display = 'block', 5000)
     }
-  }, 30) 
- }
+   }
+
+
 });  
 
 document.body.addEventListener('keyup', (e) => {
-  if(e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
-    clearInterval(stop);
-    change = true;
-  }
+  if(e.key === 'ArrowRight' || e.key === 'ArrowLeft') clearInterval(envMark);
 });  
