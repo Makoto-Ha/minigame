@@ -25,7 +25,7 @@ const bigChange = (target, max) => {
 const animate = (type, target, max) => {
   switch(type) {
     case 'bigChange':
-      markAnimate.bigchange = setInterval(bigChange(target, max), 100);
+      markAnimate.bigchange = setInterval(bigChange(target, max), 180);
   }   
 }
 

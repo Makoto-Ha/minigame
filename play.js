@@ -55,7 +55,22 @@ player.isEat = function() {
 
 // 玩家數值變化
 player.changes = function({ body: { width, height }, ability: { speed,  jumpDistance} }) {
-  return () => {
+  let audio = document.createElement('audio');
+  document.body.appendChild(audio);
+  audio.style = `
+    position: absolute;
+    top: -100px;
+    left: -100px;
+    z-index: -999;
+    visibility: hidden;
+  `;
+  audio.src = 'mari.mp3';
+  audio.volume = 0.1;
+  audio.addEventListener('ended', function() {
+    this.remove();
+  })
+  return () => { 
+    audio.play();
     animate('bigChange', this, { width, height });
     this.gameValue.speed += speed;
     this.gameValue.jumpDistance += jumpDistance;
