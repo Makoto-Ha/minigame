@@ -1,3 +1,5 @@
+import { animate } from './animation.js';
+
 // 玩家
 const player = document.getElementById('player');
 // 食物
@@ -22,8 +24,8 @@ const objChange = {
       height: 30
     },
     ability: {
-      speed: 10,
-      jumpDistance: 480
+      speed: 3,
+      jumpDistance: 60
     }
   }
 } 
@@ -54,8 +56,7 @@ player.isEat = function() {
 // 玩家數值變化
 player.changes = function({ body: { width, height }, ability: { speed,  jumpDistance} }) {
   return () => {
-    this.style.width = parseInt(getComputedStyle(this, null).width) + width + 'px';
-    this.style.height = parseInt(getComputedStyle(this, null).height) + height + 'px';
+    animate('bigChange', this, { width, height });
     this.gameValue.speed += speed;
     this.gameValue.jumpDistance += jumpDistance;
   }
