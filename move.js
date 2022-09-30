@@ -12,10 +12,10 @@
   player.currentKeyboard = null;
   // 跳躍高度、移動速度初始化
   player.gameValue = {
-    jumpDistance: +prompt('輸入跳躍距離'),
-    speed: +prompt('輸入移動速度'),
+    jumpDistance: 240,
+    speed: 1,
   }
-  // 控制物體左右跳
+  // 控制物體左右移動
   const move = (key, speed) => { 
     const animation = () => {
       // 紀錄當前按住的按鍵
@@ -77,15 +77,14 @@
   }
 
   // 判斷左右移動還是跳躍
-  const jumpAndMove = ({ jumpDistance, speed }) => {
-    return ({ key }) => {
-      if(key === 'ArrowUp' && !player.isJump) jumpToFall(jump, fall)(jumpDistance, speed);
-      if(key === 'ArrowRight' || key === 'ArrowLeft') move(key, speed);
-    }
+  const jumpAndMove = ({ key }) => {
+    let { jumpDistance, speed } = player.gameValue;
+    if(key === 'ArrowUp' && !player.isJump) jumpToFall(jump, fall)(jumpDistance, speed);
+    if(key === 'ArrowRight' || key === 'ArrowLeft') move(key, speed);
   }
 
   // 按下鍵盤後開始控制物體移動
-  document.body.addEventListener('keydown', jumpAndMove(player.gameValue));
+  document.body.addEventListener('keydown', jumpAndMove);
   // 鬆開按鍵後移動停止
   document.body.addEventListener('keyup', moveStop);
 })();
