@@ -4,6 +4,8 @@ const player = document.getElementById('player');
 const food = document.querySelector('.food');
 // 天空
 const sky = document.querySelector('.sky');
+// 地板
+const floor = document.querySelector('.floor');
 // 標記用
 const mark = {
   move: null,
@@ -22,7 +24,7 @@ const objChange = {
 // 設置food位置
 const settingFood = () => {
   food.style.display = 'block';
-  food.style.top = Math.ceil(Math.random()*(document.body.clientHeight - sky.clientHeight - food.clientHeight)) + 'px';
+  food.style.top = Math.ceil(Math.random()*(document.body.clientHeight - floor.clientHeight - food.clientHeight)) + 'px';
   food.style.left = Math.ceil(Math.random()*(document.body.clientWidth - food.clientWidth)) + 'px';
 }
  // 有沒有吃到食物
@@ -32,7 +34,7 @@ player.isEat = function() {
     left: food.offsetLeft,
     right: food.offsetLeft + food.clientWidth,
     top: food.offsetTop,
-    bottom: document.body.clientHeight - sky.clientHeight - (food.offsetHeight + food.offsetTop)
+    bottom: document.body.clientHeight - floor.clientHeight - (food.clientHeight + food.offsetTop)
   }
   // 吃到食物了嗎
   let isEatFood = this.offsetLeft > foodLocation.left - this.clientWidth && 
@@ -99,10 +101,10 @@ const envDetect = (key, revice) => {
   
 }
 // 遊玩
-const gameplay = e => {
+const gameplay = ({ key }) => {
 
   // 移動調用環境偵測
-  envDetect(e.key, objChange); 
+  envDetect(key, objChange); 
 
   // 提升能力後，在畫面上顯示升級訊息
   const message = ({ type, ability }) => {
@@ -135,7 +137,7 @@ const gameplay = e => {
     }, 2000)
   } 
   // 按鍵J增強跳躍
-  if(e.key === 'j') {
+  if(key === 'j') {
     message({
       type: '跳躍',
       ability: 'jumpDistance'
@@ -143,7 +145,7 @@ const gameplay = e => {
     player.gameValue.jumpDistance += 10;
   }
   // 按鍵K增加移動速度
-  if(e.key === 'k') {
+  if(key === 'k') {
     message({
       type: '速度',
       ability: 'speed'
