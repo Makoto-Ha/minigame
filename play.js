@@ -14,11 +14,17 @@ const mark = {
     k: null
   }
 }
-// 個體變化參數設置
+// 能力提升變化參數設置
 const objChange = {
   player: {
-    width: 30,
-    height: 30
+    body: {
+      width: 30,
+      height: 30
+    },
+    ability: {
+      speed: 10,
+      jumpDistance: 480
+    }
   }
 } 
 // 設置food位置
@@ -46,10 +52,12 @@ player.isEat = function() {
 }
 
 // 玩家數值變化
-player.changes = ({ width, height }) => {
+player.changes = function({ body: { width, height }, ability: { speed,  jumpDistance} }) {
   return () => {
-    player.style.width = parseInt(getComputedStyle(player, null).width) + width + 'px';
-    player.style.height = parseInt(getComputedStyle(player, null).height) + height + 'px';
+    this.style.width = parseInt(getComputedStyle(this, null).width) + width + 'px';
+    this.style.height = parseInt(getComputedStyle(this, null).height) + height + 'px';
+    this.gameValue.speed += speed;
+    this.gameValue.jumpDistance += jumpDistance;
   }
 }
 
@@ -114,8 +122,8 @@ const gameplay = ({ key }) => {
     }
     span.innerHTML = `
     <span>
-      <p>${type}升級</p>
-      <p>當前${type}: ${player.gameValue[ability]}</p>
+      <p>${type}</p>
+      <p>${ability}</p>
     </span>
     `;
     span.style = `
@@ -139,18 +147,27 @@ const gameplay = ({ key }) => {
   // 按鍵J增強跳躍
   if(key === 'j') {
     message({
-      type: '跳躍',
-      ability: 'jumpDistance'
+      type: '跳躍升級',
+      ability: `當前跳躍: ${player.gameValue.jumpDistance}`
     })
     player.gameValue.jumpDistance += 10;
   }
   // 按鍵K增加移動速度
   if(key === 'k') {
     message({
-      type: '速度',
-      ability: 'speed'
+      type: '速度升級',
+      ability: `當前速度: ${player.gameValue.speed}`
     });
     player.gameValue.speed += 1;  
+  }
+
+  if(key === 'h') {
+    message({
+      type: '能力重置',
+      ability: `當前速度: ${player.gameValue.speed}，當前跳躍: ${player.gameValue.jumpDistance}`
+    })
+    player.gameValue.speed = 3;
+    player.gameValue.jumpDistance = 240;
   }
 }
 
