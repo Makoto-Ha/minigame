@@ -13,7 +13,7 @@
   // 跳躍高度、移動速度初始化
   player.gameValue = {
     jumpDistance: 240,
-    speed: 1,
+    speed: 3,
   }
   // 控制物體左右移動
   const move = (key, speed) => { 
