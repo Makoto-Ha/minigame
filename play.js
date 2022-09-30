@@ -2,12 +2,15 @@
 const player = document.getElementById('player');
 // 食物
 const food = document.querySelector('.food');
-// 地板
-const floor = document.querySelector('.background > div:nth-child(1)');
+// 天空
+const sky = document.querySelector('.sky');
 // 標記用
 const mark = {
   move: null,
-  jump: null
+  jump: null,
+  keyboard: {
+    k: null
+  }
 }
 // 個體變化參數設置
 const objChange = {
@@ -19,7 +22,7 @@ const objChange = {
 // 設置food位置
 const settingFood = () => {
   food.style.display = 'block';
-  food.style.top = Math.ceil(Math.random()*(document.body.clientHeight - floor.clientHeight - food.clientHeight)) + 'px';
+  food.style.top = Math.ceil(Math.random()*(document.body.clientHeight - sky.clientHeight - food.clientHeight)) + 'px';
   food.style.left = Math.ceil(Math.random()*(document.body.clientWidth - food.clientWidth)) + 'px';
 }
  // 有沒有吃到食物
@@ -29,7 +32,7 @@ player.isEat = function() {
     left: food.offsetLeft,
     right: food.offsetLeft + food.clientWidth,
     top: food.offsetTop,
-    bottom: document.body.clientHeight - floor.clientHeight - (food.offsetHeight + food.offsetTop)
+    bottom: document.body.clientHeight - sky.clientHeight - (food.offsetHeight + food.offsetTop)
   }
   // 吃到食物了嗎
   let isEatFood = this.offsetLeft > foodLocation.left - this.clientWidth && 
@@ -61,10 +64,7 @@ const eatAfter = (creating, playerChange) => {
 }
 
 // 創建食物
-const createFood = () => {
-  console.log('創建');
-  setTimeout(settingFood, 3000);
-}
+const createFood = () => setTimeout(settingFood, 3000);
 
 // 吃食物動作組合
 const eatFood = (eat, create, revise) => eat(create, revise, eatAfter);
@@ -92,29 +92,64 @@ const envDetect = (key, revice) => {
   if(key === 'ArrowRight' || key === 'ArrowLeft') {
     mark.move = setInterval(move(clearInterval));
   }
-  
+
   // 跳躍偵測 
   if(key === 'ArrowUp' && parseInt(player.style.bottom) === 0) 
     mark.jump = setInterval(jump);
   
 }
-
+// 遊玩
 const gameplay = e => {
-  // 移動開始調用環境偵測
-    envDetect(e.key, objChange); 
+
+  // 移動調用環境偵測
+  envDetect(e.key, objChange); 
+
+  // 提升能力後，在畫面上顯示升級訊息
+  const message = ({ type, ability }) => {
+    let span = document.createElement('span');
+    if(food.nextSibling) {
+      food.nextSibling.remove();
+    }
+    span.innerHTML = `
+    <span>
+      <p>${type}升級</p>
+      <p>當前${type}: ${player.gameValue[ability]}</p>
+    </span>
+    `;
+    span.style = `
+      position: absolute;
+      width: 200px;
+      height: 30px;
+      right: 0;
+      left: 0;
+      margin: 30px auto;
+      color: red;
+      font-size: 30px;
+    `
+    sky.appendChild(span);
+    clearTimeout(mark.keyboard.k);
+    mark.keyboard.k = setTimeout(() => {
+      if(food.nextSibling) {
+        food.nextSibling.remove()
+      }
+    }, 2000)
+  } 
   // 按鍵J增強跳躍
   if(e.key === 'j') {
+    message({
+      type: '跳躍',
+      ability: 'jumpDistance'
+    })
     player.gameValue.jumpDistance += 10;
-    console.log(player.gameValue.jumpDistance);
-    console.log('跳躍升級成功');
   }
   // 按鍵K增加移動速度
   if(e.key === 'k') {
-    player.gameValue.speed += 1;
-    console.log(player.gameValue.speed);
-    console.log('速度升級成功');
+    message({
+      type: '速度',
+      ability: 'speed'
+    });
+    player.gameValue.speed += 1;  
   }
-
 }
 
 // 鬆開按鍵停止遊戲
@@ -130,7 +165,7 @@ document.body.addEventListener('keydown', gameplay);
 // 離開按鍵終止遊戲
 document.body.addEventListener('keyup', gameStop);  
 
-// 開始設置Food
+// 起始設置Food
 settingFood(); 
 
 //---------------------------------
