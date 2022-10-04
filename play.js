@@ -1,13 +1,8 @@
-import { animate } from './animation.js';
+import player from './player.js';
+import { food, createFood, settingFood } from './food.js';
 
-// 玩家
-const player = document.getElementById('player');
-// 食物
-const food = document.querySelector('.food');
 // 天空
 const sky = document.querySelector('.sky');
-// 地板
-const floor = document.querySelector('.floor');
 // 標記用
 const mark = {
   move: null,
@@ -17,65 +12,18 @@ const mark = {
   }
 }
 // 能力提升變化參數設置
-const objChange = {
+const valueChange = {
   player: {
     body: {
-      width: 30,
-      height: 30
+      width: 10,
+      height: 10
     },
     ability: {
-      speed: 3,
-      jumpDistance: 60
+      speed: 1,
+      jumpDistance: 30
     }
   }
 } 
-// 設置food位置
-const settingFood = () => {
-  food.style.display = 'block';
-  food.style.top = Math.ceil(Math.random()*(document.body.clientHeight - floor.clientHeight - food.clientHeight)) + 'px';
-  food.style.left = Math.ceil(Math.random()*(document.body.clientWidth - food.clientWidth)) + 'px';
-}
- // 有沒有吃到食物
-player.isEat = function() {
-  // 食物位置
-  let foodLocation = {
-    left: food.offsetLeft,
-    right: food.offsetLeft + food.clientWidth,
-    top: food.offsetTop,
-    bottom: document.body.clientHeight - floor.clientHeight - (food.clientHeight + food.offsetTop)
-  }
-  // 吃到食物了嗎
-  let isEatFood = this.offsetLeft > foodLocation.left - this.clientWidth && 
-                  this.offsetLeft < foodLocation.right &&
-                  this.offsetTop > foodLocation.top - this.clientHeight &&
-                  this.clientHeight + parseInt(this.style.bottom) > foodLocation.bottom;
-                  
-  return isEatFood;
-}
-
-// 玩家數值變化
-player.changes = function({ body: { width, height }, ability: { speed,  jumpDistance} }) {
-  let audio = document.createElement('audio');
-  document.body.appendChild(audio);
-  audio.style = `
-    position: absolute;
-    top: -100px;
-    left: -100px;
-    z-index: -999;
-    visibility: hidden;
-  `;
-  audio.src = 'mari.mp3';
-  audio.volume = 0.1;
-  audio.addEventListener('ended', function() {
-    this.remove();
-  })
-  return () => { 
-    audio.play();
-    animate('bigChange', this, { width, height });
-    this.gameValue.speed += speed;
-    this.gameValue.jumpDistance += jumpDistance;
-  }
-}
 
 // 正在吃食物
 const eating = (create, revise, after) => {
@@ -88,9 +36,6 @@ const eatAfter = (creating, playerChange) => {
   creating();
   playerChange();
 }
-
-// 創建食物
-const createFood = () => setTimeout(settingFood, 3000);
 
 // 吃食物動作組合
 const eatFood = (eat, create, revise) => eat(create, revise, eatAfter);
@@ -128,7 +73,7 @@ const envDetect = (key, revice) => {
 const gameplay = ({ key }) => {
 
   // 移動調用環境偵測
-  envDetect(key, objChange); 
+  envDetect(key, valueChange); 
 
   // 提升能力後，在畫面上顯示升級訊息
   const message = ({ type, ability }) => {
@@ -158,14 +103,14 @@ const gameplay = ({ key }) => {
       if(food.nextSibling) {
         food.nextSibling.remove()
       }
-    }, 2000)
+    }, 2000);
   } 
   // 按鍵J增強跳躍
   if(key === 'j') {
     message({
       type: '跳躍升級',
       ability: `當前跳躍: ${player.gameValue.jumpDistance}`
-    })
+    });
     player.gameValue.jumpDistance += 10;
   }
   // 按鍵K增加移動速度
@@ -181,9 +126,19 @@ const gameplay = ({ key }) => {
     message({
       type: '能力重置',
       ability: `當前速度: ${player.gameValue.speed}，當前跳躍: ${player.gameValue.jumpDistance}`
-    })
+    });
     player.gameValue.speed = 3;
     player.gameValue.jumpDistance = 240;
+  }
+
+  if(key === 'g') {
+    message({
+      type: '體積重置',
+      ability: '大小還原'
+    });
+    player.style.width = '100px';
+    player.style.height = '100px';
+
   }
 }
 

@@ -41,7 +41,7 @@
     background: rgb(219, 251, 8);
   }
 
-  .food {
+  .sky > .food {
     display: block;
     position: absolute;
     left: 0;
@@ -50,17 +50,39 @@
     height: 50px;
     background: rgb(68, 203, 34);
   }
+
+  .sky > .platform:nth-child(1) {
+    position: absolute;
+    bottom: 60px;
+    left: 440px;
+    width: 300px;
+    height: 40px;
+    background: blue;
+  }
+
+  .sky > .platform:nth-child(2) {
+    position: absolute;
+    bottom: 200px;
+    left: 1000px;
+    width: 300px;
+    height: 40px;
+    background: blue;
+  }
 </style>
 <body>
   <div class="background">
     <div class="sky">
+      <div class="platform"></div>
+      <div class="platform"></div>
       <div id="player" style="left: 0;bottom: 0;"></div>
-      <span class="food"></span>
+      <span class="food"></span>  
     </div>
     <div class="floor"></div>
   </div>
 </body>
 <script src="animation.js" type="module"></script>
-<script src="move.js"></script>
+<script src="move.js" type="module"></script>
 <script src="play.js" type="module"></script>
+<script src="platform.js" type="module"></script>
+<script src="food.js" type="module"></script>
 </html>

@@ -1,20 +1,12 @@
+import player from './player.js';
+
 (function() {
-  // 本體玩家
-  let player = document.getElementById('player');
   // 標記用
   const mark = { 
     move: null, 
     fall: null, 
     jump: null
   };
-  // 狀態初始化
-  player.isJump = false;
-  player.currentKeyboard = null;
-  // 跳躍高度、移動速度初始化
-  player.gameValue = {
-    jumpDistance: 240,
-    speed: 3,
-  }
   // 控制物體左右移動
   const move = (key, speed) => { 
     const animation = () => {
