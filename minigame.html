@@ -13,32 +13,22 @@
   }
 
   body, html {
-    height: 100%;
+    height: 200%;
   }
 
   .background {
-    width: 100%;
     height: 100%;
-    background: #000;
   }
 
   .background > .sky {
     position: relative;
-    width: 100%;
-    height: 60%;
-    background: rgba(255, 255, 255, 0.718);
+    height: 90%;
+    background: rgba(199, 242, 252, 0.9);
   }
 
   .background > .floor {
-    height: 40%;
-    background: rgb(51, 42, 230);
-  }
-
-  #player {
-    position: absolute;
-    width: 100px;
-    height: 100px;
-    background: rgb(219, 251, 8);
+    height: 10%;
+    background: rgba(29, 29, 29, 0.618);
   }
 
   .sky > .food {
@@ -51,38 +41,27 @@
     background: rgb(68, 203, 34);
   }
 
-  .sky > .platform:nth-child(1) {
+  #player {
     position: absolute;
-    bottom: 60px;
-    left: 440px;
-    width: 300px;
-    height: 40px;
-    background: blue;
+    width: 80px;
+    height: 80px;
+    background: rgb(230, 4, 19);
+    z-index: 99;
   }
 
-  .sky > .platform:nth-child(2) {
-    position: absolute;
-    bottom: 200px;
-    left: 1000px;
-    width: 300px;
-    height: 40px;
-    background: blue;
+  .floor {
+    position: relative;
+    z-index: 100;
   }
 </style>
 <body>
   <div class="background">
     <div class="sky">
-      <div class="platform"></div>
-      <div class="platform"></div>
       <div id="player" style="left: 0;bottom: 0;"></div>
       <span class="food"></span>  
     </div>
     <div class="floor"></div>
   </div>
 </body>
-<script src="animation.js" type="module"></script>
-<script src="move.js" type="module"></script>
-<script src="play.js" type="module"></script>
-<script src="platform.js" type="module"></script>
-<script src="food.js" type="module"></script>
+<script src="gameplay.js" type="module"></script>
 </html>

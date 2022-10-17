@@ -1,11 +1,8 @@
-const markAnimate = {
-  bigchange: null
-}
 const bigChange = (target, max) => {
   let width = 0, height = 0;
   return () => {
     if(width >= max.width && height >= max.height) {
-      clearInterval(markAnimate.bigchange);
+      clearInterval(mark.bigChange);
       width = 0;
       height = 0;
     }
@@ -22,11 +19,35 @@ const bigChange = (target, max) => {
   }
 }
 
-const animate = (type, target, max) => {
+const platformsMove = platforms => {
+  let count = 0, toggle = true;
+  return () => { 
+    if(count < 300 && toggle) {
+      platforms.forEach(platform => platform.style.left = parseInt(platform.style.left) + 1 + 'px');
+      count++;
+    }else {
+      toggle = false;
+    }
+
+    if(count <= 300 && !toggle) {
+      platforms.forEach(platform => platform.style.left = parseInt(platform.style.left) - 1 + 'px');
+      count--;
+    }
+
+    if(count === -300) {
+      toggle = true;
+    }
+
+  }
+}
+
+const animate = (type, target, value) => {
   switch(type) {
     case 'bigChange':
-      markAnimate.bigchange = setInterval(bigChange(target, max), 180);
+      mark.bigChange = setInterval(bigChange(target, value), 180);
+    case 'platformsMove':
+      mark.platformMove = setInterval(platformsMove(target), value.speed);
   }   
 }
 
-export { animate };
+export default animate;
