@@ -1,134 +1,84 @@
 import { isBelowPlatForm } from './platform.js';
+import { playerFollowView as followView } from './environment.js';
+import player from './player.js';
 
 // 控制物體左右移動
 const move = (key, speed) => { 
-  const forward = () => {
-    player.style.left = player.offsetLeft + speed + 'px';
-    document.documentElement.scrollLeft = player.offsetLeft - 400;
-  }
-
-  const stepBack = () => {
-    player.style.left = player.offsetLeft - speed + 'px';
-    document.documentElement.scrollLeft = player.offsetLeft - 400;
-  }
-
-  const goOrBack = keyboard => {
-    switch(keyboard) {
+  const forward = () => player.style.left = player.offsetLeft + speed + 'px';
+  const stepBack = () => player.style.left = player.offsetLeft - speed + 'px';
+  
+  // 前進、後退
+  const goOrBack = () => {
+    switch(key) {
       case 'ArrowRight':
-        forward();
-        break;
+        return forward();
       case 'ArrowLeft':
-        stepBack();
-        break; 
+        return stepBack();
     }  
   }
-
-  const isNoTouch = keyboard => {
-    return !player.isTouch(keyboard);
-  }
-
-  const noTouchToGO = funcs => {
-    funcs.every(func => func(key));
-  }
-
-  noTouchToGO([isNoTouch, goOrBack]);
+  // 閥門，判斷沒有撞擊才能移動
+  const valve = () => !player.isTouch(key);
+  const program = step => step.every(execute => execute());
+  program([valve, goOrBack, followView]);
 }
 
 // 跳躍
 const jump = (fall, distance, speed) => {
   // 跳躍到落下
-  const jumpToFall = program => {
-    program.forEach(execute => execute());
-  }
-
+  const jumpToFall = program => program.every(execute => execute());
   // 跳躍動畫
-  const jumpNow = () => {
-    player.style.bottom = parseInt(player.style.bottom) + speed + 'px';
-    document.documentElement.scrollTop = player.offsetTop - 500;
-  }
-
+  const jumpNow = () => player.style.bottom = parseInt(player.style.bottom) + speed + 'px';
   // 判斷跳躍是否到最高點後，開始落下
-  const highest = falling => {
-    return () => {
-      let playerBottom = parseInt(player.style.bottom);
-
-      if(playerBottom > distance || isBelowPlatForm(player)) falling();
-    }
-  }
-
+  const isHighest = () => parseInt(player.style.bottom) > distance || isBelowPlatForm(player);
   // 開始落下
-  const startFall = () => {
+  const toFall = () => {
     clearInterval(mark.jump);
     mark.fall = setInterval(fall, 0, speed);
   }
-
   player.isJump = true;
-  // 跳躍距離要加上離地高度
-  distance += parseInt(player.style.bottom);  
-  mark.jump = setInterval(jumpToFall, 0, [jumpNow, highest(startFall)]);
+  // 跳躍距離要加上離地高度  
+  jumpToFall([jumpNow, followView, isHighest, toFall]);
 }
 
 // 落下
-const fall = (speed = 2) => {
-  // 落下到停止之間
-  const fallToStop = (falling, falled, lowest) => {
-    falling(falled, lowest);
-  }
-  // 開始落下
-  const start = (fallNow, bottom) => {
-    return (falled, lowest) => {
-      lowest ? falled() : fallNow(bottom);
-    }
-  }
+const fall = (speed = 2, isStand = player.isStand) => {
+  const isLowest = isStand || parseInt(player.style.bottom) === 0;
+  // 落下動畫
+  const fallNow = () => player.style.bottom = parseInt(player.style.bottom) - speed + 'px';
   // 停止落下
-  const stop = () => {
+  const toStop = () => {
     clearInterval(mark.fall);
-    player.inAir = false;
+    player.isFall = false;
     player.isJump = false;
   }
-  // 判斷是否落到平臺或是地面
-  const isLowest = blooens => {
-    return blooens.some(blooen => blooen);
-  }
-
-  // 落下動畫
-  const fallNow = bottom => {
-    player.style.bottom = bottom - speed + 'px';
-    document.documentElement.scrollTop = player.offsetTop - 500;
-  }
-  // 有沒有到達地面
-  let playerBottom = parseInt(player.style.bottom);
-  let isGround = playerBottom === 0;
   clearInterval(mark.jump);
-  player.inAir = true;
-  // 開始落下停止
-  fallToStop(start(fallNow, playerBottom), stop, isLowest([player.isStand, isGround]));
+  player.isFall = true;
+  // 判斷是否落到平臺或是地面，有的話就停止，沒有就繼續
+  isLowest ? toStop() : fallNow() && followView();
 }
 
-// 跳躍落下組合
-const jumpToFall = (jump, fall) => {
-  return (distance, speed) => {
-    jump(fall, distance, speed);
-  }
+// 跳躍開始
+const getJumpToFall = (jump, fall) => (distance, speed) => { 
+  mark.jump = setInterval(jump, 0, fall, distance, speed);
 }
 
 // 移動停止
 const moveStop = ({ key }) => {
   // 檢查是否和當初按住的按鍵一樣
-  if(key === player.direction) {
-    clearInterval(mark.move);
-  }
+  if(key === player.direction) clearInterval(mark.move);
 }
 
 // 判斷左右移動還是跳躍
 const jumpOrMove = e => {
   let { key } = e;
   let { jumpDistance, speed } = player.gameValue;
+  let distance = jumpDistance + parseInt(player.style.bottom);
   if(key === 'ArrowUp' || key === 'ArrowDown' || 
      key === 'ArrowRight' || key === 'ArrowLeft') e.preventDefault();
 
-  if(key === 'ArrowUp' && !player.isJump && !player.inAir) {
-    jumpToFall(jump, fall)(jumpDistance, speed);
+  if(key === 'ArrowUp' && !player.isJump && !player.isFall) {
+    let jumping = getJumpToFall(jump, fall);
+    jumping(distance, speed);
   }
 
   if(key === 'ArrowRight' || key === 'ArrowLeft') {
@@ -138,9 +88,4 @@ const jumpOrMove = e => {
   }
 }
 
-// 按下鍵盤後開始控制物體移動
-document.body.addEventListener('keydown', jumpOrMove);
-// 鬆開按鍵後移動停止
-document.body.addEventListener('keyup', moveStop);
-
-export default fall;
+export { fall, jumpOrMove, moveStop };

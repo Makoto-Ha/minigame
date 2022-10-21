@@ -20,21 +20,21 @@ const bigChange = (target, max) => {
 }
 
 const platformsMove = platforms => {
-  let count = 0, toggle = true;
+  let count = 300, toggle = true;
   return () => { 
-    if(count < 300 && toggle) {
-      platforms.forEach(platform => platform.style.left = parseInt(platform.style.left) + 1 + 'px');
+    if(count >= 0 && !toggle) {
+      platforms.forEach(platform => platform.style.left = parseInt(platform.style.left) + 2 + 'px');
       count++;
+    }
+
+    if(count > 0 && toggle) {
+      platforms.forEach(platform => platform.style.left = parseInt(platform.style.left) - 2 + 'px');
+      count--;
     }else {
       toggle = false;
     }
 
-    if(count <= 300 && !toggle) {
-      platforms.forEach(platform => platform.style.left = parseInt(platform.style.left) - 1 + 'px');
-      count--;
-    }
-
-    if(count === -300) {
+    if(count === 300) {
       toggle = true;
     }
 

@@ -1,23 +1,20 @@
 import animate from './animation.js';
-import fall from './move.js';
+import { fall } from './move.js';
 
 const sky = document.querySelector('.sky');
 const floor = document.querySelector('.floor');
 let platforms;
 
 const platformsTarget = () => {
-  let locations = [];
-  platforms.forEach(platform => {
-    let location = {
+  return [...platforms].map(platform => {
+    return {
       self: platform,
       left: platform.offsetLeft,
       right: document.body.clientWidth - (platform.offsetLeft + platform.clientWidth),
       top: platform.offsetTop,
       bottom: document.body.clientHeight - floor.clientHeight - (platform.clientHeight + platform.offsetTop),
     }
-    locations.push(location);
-  })
-  return locations;
+  });
 }
 
 // 刷新物體在平臺上嗎
@@ -26,7 +23,7 @@ const isStandPlatForm = target => {
   let isStand = platformsLocation.some(location => {
     return target.offsetLeft + target.clientWidth >= location.left &&
            document.body.clientWidth - target.offsetLeft >= location.right &&
-           parseInt(target.style.bottom) >= location.bottom + location.self.clientHeight &&
+           parseInt(target.style.bottom) - location.self.clientHeight >= location.bottom &&
            target.offsetTop + target.clientHeight >= location.top;
   });
   target.isStand = isStand;
@@ -48,27 +45,38 @@ const isBelowPlatForm = target => {
 const settingPlatForms = (
     initial = { 
       x: 300, 
-      y: 40, 
+      y: 40,
+      width: 300,
+      height: 40, 
       count: 1, 
       color: [], 
-      interval: { x: 0, y: 0 } 
+      interval: { x: 0, y: 0, width: 0, height: 0 } 
     }
   ) => {
-  let { interval: { x, y }, count, color } = initial;
+  let { interval: { x: intervalX, 
+                    y: intervalY, 
+                    width: intervalW, 
+                    height: intervalH 
+                  }, 
+                  count, color } = initial;
+
   for(let i=0; i<count; i++) {
-    let platform = document.createElement('div');
+    let { x, y, width, height } = initial;
+    let platform = document.createElement('div'); 
     platform.classList.add('platform');
     platform.style = `
       position: absolute;
-      left: ${initial.x}px;
-      bottom: ${initial.y}px;
-      width: 300px;
-      height: 40px;
+      left: ${x}px;
+      bottom: ${y}px;
+      width: ${width}px;
+      height: ${height}px;
       background: ${color[i] || 'blue'};
     `;
     sky.insertAdjacentElement('beforeend', platform);
-    initial.x += x;
-    initial.y += y;
+    initial.x += intervalX;
+    initial.y += intervalY;
+    initial.width -= intervalW;
+    initial.height += intervalH;
   }
   platforms = document.querySelectorAll('.platform');
 }
@@ -77,18 +85,16 @@ const settingPlatForms = (
 const leavePlatForm = (target, method) => {  
   let isStand = isStandPlatForm(target);
   let isEverStand = controller.leavePlatForm; 
-
+  // 什麼動作離開平臺的
   let whichLeave = type => {
     switch(type) {
       case 'move':
       return !isStand && !target.isJump;
     }
   }
-
-  let checkStand = () => {
-    return isStand || isEverStand;
-  }
-
+  // 檢查現在和剛剛是否站在平臺
+  let checkStand = () => isStand || isEverStand;
+  // 移動離開前紀錄曾經站過平臺
   let moveLeave = () => {
     controller.leavePlatForm = true;
     return whichLeave(method);
@@ -97,12 +103,10 @@ const leavePlatForm = (target, method) => {
   let startFall = () => {
     controller.leavePlatForm = false;
     clearInterval(mark.fall);
-    mark.fall = setInterval(fall, 0, 4);
+    mark.fall = setInterval(fall, 0, target.gameValue.speed);
   }
 
-  let program = [checkStand, moveLeave, startFall];
-
-  program.every(execute => execute());
+  Array.from([checkStand, moveLeave, startFall]).every(execute => execute());
 }
 
 // 控制那些可以平臺移動和速度

@@ -6,8 +6,8 @@ import { platformsTarget } from './platform.js';
 const player = document.getElementById('player');
 // 狀態初始化
 player.isJump = false;
+player.isFall = false;
 player.isStand = false;
-player.inAir = false;
 player.direction = null;
 // 跳躍高度、移動速度初始值
 player.originValue = {

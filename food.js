@@ -1,16 +1,9 @@
+import audio from './audio.js';
+
 // 食物
 const food = document.querySelector('.food');
 // 地板
 const floor = document.querySelector('.floor');
-
-// 設置food位置
-const settingFood = () => {
-  food.style.display = 'block';
-  // food.style.top = Math.ceil(Math.random()*(document.body.clientHeight - floor.clientHeight - food.clientHeight)) + 'px';
-  food.style.top = -1000 + 'px';
-  // food.style.left = Math.ceil(Math.random()*(document.body.clientWidth - food.clientWidth)) + 'px';
-  food.style.left = 1000 + 'px';
-};
 
 // 創建食物
 const createFood = () => setTimeout(settingFood, 3000);
@@ -25,4 +18,32 @@ const foodTarget = () => {
   }
 };
 
-export { food, settingFood, foodTarget, createFood };
+// 設置food位置
+const settingFood = (top, left) => {
+  food.style.display = 'block';
+  if(Number(top) && Number(left)) {
+    food.style.top = top + 'px';
+    food.style.left = left + 'px';
+  }else {
+    food.style.top = Math.ceil(Math.random()*(document.body.clientHeight - floor.clientHeight - food.clientHeight)) + 'px';
+    food.style.left = Math.ceil(Math.random()*(document.body.clientWidth - food.clientWidth)) + 'px';
+  }
+};
+
+// 吃食物動作組合
+const eatFood = revise => eating(revise);
+
+// 正在吃食物
+const eating = revise => {
+  food.style.display = 'none';
+  eatAfter(revise);
+}
+
+// 吃完食物後
+const eatAfter = playerChange => {
+  createFood();
+  playerChange();
+  audio();
+}
+
+export { food, settingFood, foodTarget, eatFood };
