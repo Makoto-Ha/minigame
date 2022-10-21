@@ -1,6 +1,5 @@
-import { isBelowPlatForm } from './platform.js';
-import { playerFollowView as followView } from './environment.js';
-import player from './player.js';
+import { isBelowPlatForm } from './module.js';
+import { playerFollowView as followView } from './module.js';
 
 // 控制物體左右移動
 const move = (key, speed) => { 

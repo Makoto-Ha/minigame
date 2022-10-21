@@ -1,6 +1,6 @@
-import animate from './animation.js';
-import { foodTarget } from './food.js';
-import { platformsTarget } from './platform.js';
+import { animate } from './module.js';
+import { foodTarget } from './module.js';
+import { platformsTarget } from './module.js';
 
 // 本體玩家
 const player = document.getElementById('player');
@@ -47,11 +47,9 @@ player.isTouch = function(key) {
             this.offsetTop + this.clientHeight > location.top;
                                     
   });
-
+  
   if(player.direction !== key && istouch) return false;
- 
   player.direction = key; 
-
   return istouch;
 }
 
@@ -63,5 +61,3 @@ player.changes = function({ body: { width, height }, ability: { speed,  jumpDist
     this.gameValue.jumpDistance += jumpDistance;
   }
 }
-
-export default player;

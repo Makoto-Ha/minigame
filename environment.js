@@ -1,3 +1,4 @@
+import { platformsTarget } from './module.js'
 // 標記用
 window.mark = {
   fall: null,
@@ -25,38 +26,6 @@ window.controller = {
   leavePlatForm: false
 }
 
-const updatePlatfroms = () => {
-  let toggle = true; 
-  return ({ key }) => {
-    let isCurrentKey = key === 'ArrowUp' || key === 'ArrowDown' ||
-                       key === 'ArrowLeft' || key === 'ArrowRight';
-                                       
-    if(!player.isFall && isCurrentKey) {
-      toggle = true;
-      clearInterval(mark.location.platforms);
-      mark.location.platforms = setInterval(() => {
-        // import('./platform.js');
-        window.platformsLocation = '';
-      });
-    }
-
-    if(player.isFall && toggle) {
-      toggle = false;
-      clearInterval(mark.location.platforms);
-      mark.location.platforms = setInterval(() => {
-        // import('./platform.js');
-        window.platformsLocation = '';
-        if(player.isStand && player.style.bottom === 0) clearInterval(mark.location.platforms);
-      });
-    }
-
-  }
-}
-
-const clearContUpdate = () => {
-  if(!player.isFall) clearInterval(mark.location.platforms);
-}
-
 const mapInitialization = () => {
   // 滾動條重置
   setTimeout(() => {
@@ -80,4 +49,4 @@ const playerFollowView = ((left, top) => {
   }
 })(400, 500);
 
-export { updatePlatfroms, clearContUpdate, mapInitialization, playerFollowView };
+export { mapInitialization, playerFollowView };

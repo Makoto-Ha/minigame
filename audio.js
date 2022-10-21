@@ -1,4 +1,4 @@
-export default (function() {
+function playAudio() {
   let audio = document.createElement('audio');
   document.body.appendChild(audio);
   audio.style = `
@@ -12,4 +12,6 @@ export default (function() {
   audio.volume = 0.1;
   audio.addEventListener('ended', function() { this.remove(); });
   audio.play();
-});
+};
+
+export default playAudio;

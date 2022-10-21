@@ -1,4 +1,4 @@
-import audio from './audio.js';
+import { audio } from './module.js';
 
 // 食物
 const food = document.querySelector('.food');
@@ -31,8 +31,9 @@ const settingFood = (top, left) => {
 };
 
 // 吃食物動作組合
-const eatFood = revise => eating(revise);
-
+const eatFood = revise => {
+  if(player.isEat() && food.style.display !== 'none') eating(revise);
+}
 // 正在吃食物
 const eating = revise => {
   food.style.display = 'none';
@@ -46,4 +47,4 @@ const eatAfter = playerChange => {
   audio();
 }
 
-export { food, settingFood, foodTarget, eatFood };
+export { settingFood, foodTarget, eatFood };

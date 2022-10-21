@@ -1,7 +1,6 @@
-import player from './player.js';
-import { settingPlatForms, platformsMove, leavePlatForm } from './platform.js';
-import { food, settingFood, eatFood } from './food.js';
-import { playerFollowView } from './environment.js';
+import { settingPlatForms, platformsMove, leavePlatForm } from './module.js';
+import { settingFood, eatFood } from './module.js';
+import { playerFollowView } from './module.js';
 
 // 能力提升變化參數設置
 const updateValue = {
@@ -32,9 +31,7 @@ const envDetect = (key, revice) => {
   // 偵測跳躍，跟移動不同，跳躍不能按住，所以必須偵測到落地
   const jump = () => {
     if(!player.isJump) clearInterval(mark.detect.jump);
-   
-    if(player.isEat() && food.style.display !== 'none') 
-      eatFood(player.changes(revice.player));
+    eatFood(player.changes(revice.player));
   }
 
   // 左右移動偵測
@@ -56,6 +53,7 @@ const gameplay = ({ key }) => {
   // 提升能力後，在畫面上顯示升級訊息
   const message = ({ type, ability }) => {
     let span = document.createElement('span');
+    let food = document.querySelector('.food');
     if(food.nextSibling) {
       food.nextSibling.remove();
     }
@@ -126,14 +124,14 @@ const gameplay = ({ key }) => {
 }
 
 // 鬆開按鍵停止遊戲
-const gameStop = e => {
-  if(e.key === 'ArrowRight' || e.key === 'ArrowLeft') clearInterval(mark.detect.move); 
+const gameStop = ({ key }) => {
+  if(key === 'ArrowRight' || key === 'ArrowLeft') clearInterval(mark.detect.move); 
 }
 
 const startDetect = ({ key }) => {
-  let isGround = parseInt(player.style.bottom) === 0;
+  const isGround = () => parseInt(player.style.bottom) === 0;
   // 防止在平臺上也能觸發
-  if(key === 'ArrowUp' && isGround) {
+  if(key === 'ArrowUp' && isGround()) {
     const detect = () => {
       const toDetect = program => program.every(execute => execute());
       // 返回true用於contOrEnd偵測繼續
@@ -142,12 +140,10 @@ const startDetect = ({ key }) => {
         return true;
       }
       // 結束或著繼續偵測
-      const isContinue = () => {
-        isGround = parseInt(player.style.bottom) === 0;
-        return !isGround || clearInterval(mark.detect.env);
-      }
+      const valve = () => !isGround() || clearInterval(mark.detect.env);
+   
       // 偵測啟動
-      toDetect([isContinue, env]);
+      toDetect([valve, env]);
     }
 
     mark.detect.env = setInterval(detect);
@@ -165,7 +161,7 @@ settingFood(3000, -300);
 // x, y(number)初始位置、count(number)數量、color(array)顏色、interval(object)的x, y為間隔
 settingPlatForms({
   x: 700,
-  y: 80,
+  y: 0,
   width: 300,
   height: 60,
   count: 10,

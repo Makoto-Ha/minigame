@@ -1,5 +1,5 @@
-import animate from './animation.js';
-import { fall } from './move.js';
+import { animate } from './module.js';
+import { fall } from './module.js';
 
 const sky = document.querySelector('.sky');
 const floor = document.querySelector('.floor');
@@ -37,7 +37,7 @@ const isBelowPlatForm = target => {
     return target.offsetLeft + target.clientWidth > location.left &&
            document.body.clientWidth - target.offsetLeft > location.right &&
            parseInt(target.style.bottom) + target.clientHeight >= location.bottom &&
-           target.offsetTop + target.clientHeight >= location.top + location.self.clientHeight;
+           target.offsetTop + target.clientHeight - location.self.clientHeight >= location.top;
   }); 
 }
 
